@@ -131,3 +131,16 @@ Use este modelo ao iniciar ou concluir uma tarefa. Acrescente uma entrada datada
 - **Pendências, dúvidas ou bloqueios:** configurar `UNITY_LICENSE` nos secrets do GitHub e observar uma execução real para confirmar disponibilidade da imagem GameCI para a versão `6000.6.7f1`. Não há testes PlayMode nesta primeira cobertura. Uma tentativa pela linha de comando local não gerou relatório; os resultados reportados são exclusivamente da execução pelo Unity MCP/Editor.
 - **Próximo passo proposto:** abrir o Test Runner no Unity e executar EditMode; depois enviar as alterações ao GitHub quando o usuário decidir, configurar o secret e confirmar o status do workflow.
 - **Aprovação necessária antes de continuar:** nenhuma para validar os testes locais; não fazer commit ou push sem solicitação explícita.
+
+## Registro — configuração de ativação do GameCI
+
+- **Data:** 2026-11-05
+- **Agente que preparou:** Codex
+- **Agente destinatário:** usuário / próximo agente
+- **Objetivo / escopo aprovado:** diagnosticar a primeira execução do workflow e preparar a esteira para receber a autenticação Unity necessária.
+- **Arquivos alterados:** `.github/workflows/unity-tests.yml`; `documentation/testing.md`; `documentation/project-status.md`; `documentation/handoff.md`.
+- **O que foi feito:** o log mostrou que a imagem `unityci/editor:ubuntu-6000.6.7f1-linux-il2cpp-3` foi baixada, mas o GameCI não encontrou estratégia de ativação. O workflow agora encaminha `UNITY_EMAIL`, `UNITY_PASSWORD`, `UNITY_SERIAL` e `UNITY_LICENSE`. A documentação explica quais secrets configurar para Personal, Plus/Pro ou Enterprise/Industry.
+- **Verificações ou testes executados e resultados:** analisado o log fornecido pelo usuário. Ele confirma que a execução terminou com erro de estratégia de licença antes da etapa de testes; portanto, nenhum teste remoto rodou. Os cinco testes continuam validados localmente no Unity Editor, conforme registro anterior. A correção do workflow ainda não foi executada no GitHub.
+- **Pendências, dúvidas ou bloqueios:** o usuário precisa cadastrar no repositório os secrets correspondentes ao tipo de licença Unity usado. Nenhuma credencial foi solicitada ou armazenada nesta sessão.
+- **Próximo passo proposto:** conferir o tipo de licença Unity, criar os secrets necessários nas configurações do repositório, commitar e enviar esta correção, e observar a próxima execução do workflow.
+- **Aprovação necessária antes de continuar:** não fazer commit ou push sem solicitação explícita.

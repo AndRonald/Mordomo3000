@@ -17,4 +17,4 @@ Em 2026-11-05, foram concluídos os scripts e a integração dos prefabs/cena. A
 
 ## Infraestrutura de testes
 
-Em 2026-11-05, foi criada uma suíte inicial de testes EditMode para `PackageItem` e `DeliveryDestination`, com workflow GitHub Actions para Unity `6000.6.7f1`. Os cinco testes passaram no Unity Editor. A execução remota ainda exige configurar o secret `UNITY_LICENSE` e confirmar a compatibilidade da imagem GameCI com essa versão do Editor.
+Em 2026-11-05, foi criada uma suíte inicial de testes EditMode para `PackageItem` e `DeliveryDestination`, com workflow GitHub Actions para Unity `6000.6.7f1`. Os cinco testes passaram no Unity Editor. A primeira execução remota baixou a imagem Unity, mas parou antes dos testes porque faltavam credenciais de ativação. O workflow agora aceita as variáveis de secret para Personal, Plus/Pro ou Enterprise; a nova execução depende de configurar o conjunto correspondente à licença da conta.

@@ -163,6 +163,7 @@ GameObject:
   m_Component:
   - component: {fileID: 84476209}
   - component: {fileID: 84476210}
+  - component: {fileID: 84476211}
   m_Layer: 0
   m_Name: Casa
   m_TagString: Untagged
@@ -221,6 +222,34 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 1d32c39ddbe2c994d952e1a187099fcb, type: 2}
   m_BuildHeightMesh: 0
+--- !u!114 &84476211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84476208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2b61cf9e2161464cb68065eab43bd98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PackageDeliveryManager
+  robot: {fileID: 0}
+  pickupPoint: {fileID: 0}
+  packageSpawnAnchor: {fileID: 0}
+  carryAnchor: {fileID: 0}
+  waitPoint: {fileID: 0}
+  packagePrefab: {fileID: 6070226811673096827, guid: e904286d1a2b0ed40af9a63066eafa1f, type: 3}
+  destinations: []
+  destinationPriority:
+  - Entrega_Sala
+  - Entrega_Cozinha
+  - Entrega_Quarto
+  - Entrega_Escritorio
+  maxWaitingPackages: 6
+  packageQueueSpacing: 0.35
+  keyboardInputEnabled: 1
+  retryInterval: 1
 --- !u!1 &215761792
 GameObject:
   m_ObjectHideFlags: 0
@@ -2279,6 +2308,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1378048205}
+  - component: {fileID: 1378048206}
   m_Layer: 0
   m_Name: Entrega_Quarto
   m_TagString: Untagged
@@ -2307,6 +2337,25 @@ Transform:
   - {fileID: 507904921}
   m_Father: {fileID: 881482919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1378048206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378048204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dabcfa3dfb774a4f9ac9cd52d37a26f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryDestination
+  approachPoint: {fileID: 1322556458}
+  capacity: 4
+  storageSlots:
+  - {fileID: 2008710017}
+  - {fileID: 1125439243}
+  - {fileID: 1245427403}
+  - {fileID: 507904921}
 --- !u!1 &1498344492
 GameObject:
   m_ObjectHideFlags: 0
@@ -2527,6 +2576,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1748566712}
+  - component: {fileID: 1748566713}
   m_Layer: 0
   m_Name: Entrega_Sala
   m_TagString: Untagged
@@ -2555,6 +2605,25 @@ Transform:
   - {fileID: 773402442}
   m_Father: {fileID: 881482919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1748566713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748566711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dabcfa3dfb774a4f9ac9cd52d37a26f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryDestination
+  approachPoint: {fileID: 2128215777}
+  capacity: 4
+  storageSlots:
+  - {fileID: 1259516480}
+  - {fileID: 696024234}
+  - {fileID: 1784088905}
+  - {fileID: 773402442}
 --- !u!1 &1784088904
 GameObject:
   m_ObjectHideFlags: 0
@@ -2819,6 +2888,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1894293063}
+  - component: {fileID: 1894293064}
   m_Layer: 0
   m_Name: Entrega_Escritorio
   m_TagString: Untagged
@@ -2847,6 +2917,25 @@ Transform:
   - {fileID: 1326698984}
   m_Father: {fileID: 881482919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1894293064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894293062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dabcfa3dfb774a4f9ac9cd52d37a26f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryDestination
+  approachPoint: {fileID: 227579610}
+  capacity: 4
+  storageSlots:
+  - {fileID: 215761793}
+  - {fileID: 1503958066}
+  - {fileID: 508154646}
+  - {fileID: 1326698984}
 --- !u!1 &1931691084
 GameObject:
   m_ObjectHideFlags: 0
@@ -2968,6 +3057,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1944833845}
+  - component: {fileID: 1944833846}
   m_Layer: 0
   m_Name: Entrega_Cozinha
   m_TagString: Untagged
@@ -2996,6 +3086,25 @@ Transform:
   - {fileID: 723365503}
   m_Father: {fileID: 881482919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1944833846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944833844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dabcfa3dfb774a4f9ac9cd52d37a26f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryDestination
+  approachPoint: {fileID: 2134095871}
+  capacity: 4
+  storageSlots:
+  - {fileID: 1258418540}
+  - {fileID: 559809726}
+  - {fileID: 266315495}
+  - {fileID: 723365503}
 --- !u!1 &2008710016
 GameObject:
   m_ObjectHideFlags: 0

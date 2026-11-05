@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>Coordinates package intake, pickup, room selection, delivery, and return.</summary>
+[RequireComponent(typeof(RobotMonitoring))]
 public sealed class PackageDeliveryManager : MonoBehaviour
 {
-    private enum DeliveryState
+    public enum DeliveryState
     {
         Idle,
         GoingToPickup,
@@ -48,6 +51,16 @@ public sealed class PackageDeliveryManager : MonoBehaviour
     private int nextPackageId = 1;
     private float nextRetryTime;
     private bool warnedAboutFullCapacity;
+    private float activeTaskStartedAt;
+    private bool hasActiveTaskTimer;
+
+    public event Action<DeliveryState> DeliveryStateChanged;
+    public event Action<int, string, float, string> PackageDelivered;
+
+    public DeliveryState CurrentState => state;
+    public int ActivePackageId => activePackage != null ? activePackage.PackageId : -1;
+    public string ActiveDestinationName => activeDestination != null ? activeDestination.name : "none";
+    public float ActiveTaskElapsedSeconds => hasActiveTaskTimer ? Time.time - activeTaskStartedAt : 0f;
 
     private void Awake()
     {
@@ -75,6 +88,16 @@ public sealed class PackageDeliveryManager : MonoBehaviour
         {
             ResolveDestinationsByPriority();
         }
+
+        var monitoring = GetComponent<RobotMonitoring>();
+        if (monitoring == null)
+        {
+            Debug.LogError("Package delivery requires a RobotMonitoring component on the same GameObject.", this);
+            enabled = false;
+            return;
+        }
+
+        monitoring.Initialize(this, robot);
 
         if (robot != null)
         {
@@ -168,7 +191,7 @@ public sealed class PackageDeliveryManager : MonoBehaviour
     {
         if (waitingPackages.Count == 0)
         {
-            state = DeliveryState.Idle;
+            SetState(DeliveryState.Idle);
             warnedAboutFullCapacity = false;
             return;
         }
@@ -181,7 +204,7 @@ public sealed class PackageDeliveryManager : MonoBehaviour
                 warnedAboutFullCapacity = true;
             }
 
-            state = DeliveryState.WaitingForCapacity;
+            SetState(DeliveryState.WaitingForCapacity);
             nextRetryTime = Time.time + retryInterval;
             return;
         }
@@ -191,12 +214,14 @@ public sealed class PackageDeliveryManager : MonoBehaviour
         activeDestination = null;
         if (!robot.MoveTo(pickupPoint.position))
         {
-            state = DeliveryState.Idle;
+            SetState(DeliveryState.Idle);
             nextRetryTime = Time.time + retryInterval;
             return;
         }
 
-        state = DeliveryState.GoingToPickup;
+        activeTaskStartedAt = Time.time;
+        hasActiveTaskTimer = true;
+        SetState(DeliveryState.GoingToPickup);
     }
 
     private bool HasAvailableDestination()
@@ -205,7 +230,8 @@ public sealed class PackageDeliveryManager : MonoBehaviour
 
         foreach (var destination in destinations)
         {
-            if (destination != null && destination.HasCapacity)
+            if (destination != null && destination.HasCapacity && robot != null &&
+                robot.HasCompletePathTo(destination.ApproachPoint.position))
             {
                 return true;
             }
@@ -234,7 +260,7 @@ public sealed class PackageDeliveryManager : MonoBehaviour
     {
         if (activePackage == null)
         {
-            state = DeliveryState.Idle;
+            SetState(DeliveryState.Idle);
             nextRetryTime = Time.time + retryInterval;
             return;
         }
@@ -270,7 +296,7 @@ public sealed class PackageDeliveryManager : MonoBehaviour
             if (robot.MoveTo(destination.ApproachPoint.position))
             {
                 activeDestination = destination;
-                state = DeliveryState.GoingToDestination;
+                SetState(DeliveryState.GoingToDestination);
                 return true;
             }
         }
@@ -293,8 +319,13 @@ public sealed class PackageDeliveryManager : MonoBehaviour
         }
 
         Debug.Log($"Package {activePackage.PackageId} delivered to {activeDestination.name} ({activeDestination.OccupiedCount}/{activeDestination.ConfiguredCapacity}).", activePackage);
+        var elapsedSeconds = ActiveTaskElapsedSeconds;
+        var packageId = activePackage.PackageId;
+        var destinationName = activeDestination.name;
+        PackageDelivered?.Invoke(packageId, destinationName, elapsedSeconds, GetDestinationCapacitySummary());
         activePackage = null;
         activeDestination = null;
+        hasActiveTaskTimer = false;
         ReturnToWaitPoint();
     }
 
@@ -316,10 +347,10 @@ public sealed class PackageDeliveryManager : MonoBehaviour
 
     private void ReturnToWaitPoint()
     {
-        state = DeliveryState.Returning;
+        SetState(DeliveryState.Returning);
         if (!robot.MoveTo(waitPosition))
         {
-            state = DeliveryState.Idle;
+            SetState(DeliveryState.Idle);
             nextRetryTime = Time.time + retryInterval;
         }
     }
@@ -328,10 +359,51 @@ public sealed class PackageDeliveryManager : MonoBehaviour
 
     private void FinishCycle()
     {
-        state = DeliveryState.Idle;
+        SetState(DeliveryState.Idle);
         activePackage = null;
         activeDestination = null;
         nextRetryTime = Time.time + 0.25f;
+    }
+
+    public string GetDestinationCapacitySummary()
+    {
+        if (destinations == null || destinations.Length == 0)
+        {
+            return "no destinations configured";
+        }
+
+        var summary = new StringBuilder();
+        foreach (var destination in destinations)
+        {
+            if (destination == null)
+            {
+                continue;
+            }
+
+            if (summary.Length > 0)
+            {
+                summary.Append(", ");
+            }
+
+            summary.Append(destination.name)
+                .Append(' ')
+                .Append(destination.OccupiedCount)
+                .Append('/')
+                .Append(destination.ConfiguredCapacity);
+        }
+
+        return summary.Length > 0 ? summary.ToString() : "no destinations configured";
+    }
+
+    private void SetState(DeliveryState newState)
+    {
+        if (state == newState)
+        {
+            return;
+        }
+
+        state = newState;
+        DeliveryStateChanged?.Invoke(state);
     }
 
     private void LayoutWaitingPackages()

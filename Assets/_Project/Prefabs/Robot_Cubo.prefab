@@ -154,6 +154,7 @@ GameObject:
   - component: {fileID: 164002723168273351}
   - component: {fileID: 8402223783397956222}
   - component: {fileID: 3137614768417528015}
+  - component: {fileID: 8123914438823103339}
   m_Layer: 0
   m_Name: Robot_Cubo
   m_TagString: Untagged
@@ -219,3 +220,23 @@ MonoBehaviour:
   escritorio: {fileID: 0}
   keyboardShortcutsEnabled: 1
   destinationSampleDistance: 0.5
+  obstacleRepathRetryInterval: 1
+--- !u!114 &8123914438823103339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7048608819637117548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db38fe8df2e4ae48a64a0ea3f10e9c1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: RoboMordomo.Runtime::RobotSensorSuite
+  sensorOriginOffset: {x: 0, y: 0.1, z: 0.3}
+  detectionDistance: 0.75
+  detectionRadius: 0.12
+  scanInterval: 0.1
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295

@@ -14,7 +14,7 @@ Os testes EditMode cobrem o estado e a identificação de uma encomenda, além d
 
 O workflow `.github/workflows/unity-tests.yml` roda em pull requests, em pushes para `main` e manualmente. Ele usa Unity `6000.6.7f1`, executa os testes EditMode e publica os resultados como artefato da execução.
 
-O workflow não envia um check de resultados separado pela Checks API do GitHub. O status do próprio job do Actions indica sucesso/falha; o relatório detalhado permanece nos artefatos. Isso evita conceder permissões de escrita adicionais ao `GITHUB_TOKEN`.
+O workflow desativa explicitamente o check de resultados separado pela Checks API usando `githubToken: ''`. O GameCI v4 preenche `githubToken` com `github.token` por padrão quando o campo é omitido. O status do próprio job do Actions indica sucesso/falha; o relatório detalhado permanece nos artefatos. Isso evita conceder permissões de escrita adicionais ao `GITHUB_TOKEN`.
 
 O runner precisa de uma credencial de ativação nos secrets do repositório GitHub. Configure somente o conjunto correspondente à sua licença:
 

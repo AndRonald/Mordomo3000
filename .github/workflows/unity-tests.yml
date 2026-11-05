@@ -34,6 +34,7 @@ jobs:
           projectPath: .
           unityVersion: 6000.6.7f1
           testMode: EditMode
+          githubToken: ''
           artifactsPath: artifacts
 
       - name: Upload test results

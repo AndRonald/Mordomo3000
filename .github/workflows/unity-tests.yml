@@ -34,7 +34,6 @@ jobs:
           projectPath: .
           unityVersion: 6000.6.7f1
           testMode: EditMode
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
           artifactsPath: artifacts
 
       - name: Upload test results

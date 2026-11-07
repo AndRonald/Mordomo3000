@@ -2,17 +2,17 @@
 
 ## Testes automatizados atuais
 
-Os testes EditMode cobrem o estado e a identificação de uma encomenda, além da capacidade de armazenamento, seleção do primeiro slot livre e rejeição de armazenamento quando o destino está cheio. Eles ficam em `Assets/_Project/Tests/EditMode`.
+Os testes EditMode cobrem o estado e a identificação de uma encomenda, além da capacidade de armazenamento, seleção do primeiro slot livre e rejeição de armazenamento quando o destino está cheio. Os testes PlayMode verificam a detecção de um obstáculo pela suíte de sensores do robô e a limpeza do caminho quando o obstáculo sai. Eles ficam em `Assets/_Project/Tests/EditMode` e `Assets/_Project/Tests/PlayMode`.
 
 ## Rodar no Unity Editor
 
 1. Abra **Window > General > Test Runner**.
-2. Selecione **EditMode**.
-3. Clique em **Run All**.
+2. Selecione **EditMode** e clique em **Run All**.
+3. Repita em **PlayMode** para executar os testes dos sensores em tempo de execução.
 
 ## Esteira no GitHub
 
-O workflow `.github/workflows/unity-tests.yml` roda em pull requests, em pushes para `main` e manualmente. Ele usa Unity `6000.6.7f1`, executa os testes EditMode e publica os resultados como artefato da execução.
+O workflow `.github/workflows/unity-tests.yml` roda em pull requests, em pushes para `main` e manualmente. Ele usa Unity `6000.6.7f1` e executa EditMode e PlayMode em jobs separados. Cada job publica seus resultados como artefato da execução.
 
 O workflow desativa explicitamente o check de resultados separado pela Checks API usando `githubToken: ''`. O GameCI v4 preenche `githubToken` com `github.token` por padrão quando o campo é omitido. O status do próprio job do Actions indica sucesso/falha; o relatório detalhado permanece nos artefatos. Isso evita conceder permissões de escrita adicionais ao `GITHUB_TOKEN`.
 
@@ -26,7 +26,6 @@ O workflow encaminha essas quatro variáveis ao runner; os secrets não configur
 
 ## Limites atuais
 
-- A cobertura inicial testa unidades de lógica; ainda não há testes PlayMode de navegação ou do ciclo completo de entrega.
+- A cobertura PlayMode atual testa a percepção de obstáculos; ainda não há teste automatizado de navegação sobre NavMesh nem do ciclo completo de entrega.
 - A execução no GitHub depende da disponibilidade da imagem GameCI para `6000.6.7f1` e da configuração dos secrets de ativação adequados à licença da conta.
-- A suíte remota ainda precisa de uma execução bem-sucedida após remover o envio do check adicional.
-- O workflow não constrói um executável; por enquanto, a barreira automatizada é a suíte EditMode.
+- O workflow não constrói um executável; por enquanto, a barreira automatizada são as suítes EditMode e PlayMode.

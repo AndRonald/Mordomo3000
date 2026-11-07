@@ -38,6 +38,7 @@ jobs:
           projectPath: .
           unityVersion: 6000.6.7f1
           testMode: ${{ matrix.testMode }}
+          customParameters: ${{ matrix.testMode == 'EditMode' && '-job-worker-count 2' || '' }}
           githubToken: ''
           artifactsPath: artifacts/${{ matrix.testMode }}
 

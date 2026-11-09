@@ -29,6 +29,13 @@ public sealed class RobotNavigationController : MonoBehaviour
     [SerializeField, Min(0.1f)] private float destinationSampleDistance = 0.5f;
     [SerializeField, Min(0.1f)] private float obstacleRepathRetryInterval = 1f;
 
+    [Header("Differential drive movement")]
+    [SerializeField, Min(0.01f)] private float forwardAcceleration = 0.7f;
+    [SerializeField, Min(0.01f)] private float brakingDeceleration = 1f;
+    [SerializeField, Range(0f, 90f)] private float fullSpeedHeadingAngle = 10f;
+    [SerializeField, Range(1f, 180f)] private float turnInPlaceAngle = 65f;
+    [SerializeField, Range(0f, 1f)] private float minimumTurningSpeedFraction = 0.25f;
+
     private NavMeshAgent agent;
     private RobotSensorSuite sensorSuite;
     private bool hasActiveDestination;
@@ -36,6 +43,7 @@ public sealed class RobotNavigationController : MonoBehaviour
     private float nextRepathAttemptTime;
     private bool hasLoggedRepathFailure;
     private RobotNavigationState navigationState;
+    private float currentForwardSpeed;
 
     /// <summary>Raised once when the current navigation request reaches its destination.</summary>
     public event Action Arrived;
@@ -59,6 +67,13 @@ public sealed class RobotNavigationController : MonoBehaviour
             Debug.LogError("Robot navigation requires a RobotSensorSuite component on the same GameObject.", this);
             enabled = false;
             return;
+        }
+
+        agent.updatePosition = false;
+        agent.updateRotation = false;
+        if (agent.isOnNavMesh)
+        {
+            agent.nextPosition = transform.position;
         }
     }
 
@@ -86,7 +101,56 @@ public sealed class RobotNavigationController : MonoBehaviour
         }
 
         RetryPathWhenClear();
+        UpdateDifferentialDriveMotion();
         CheckArrival();
+    }
+
+    private void UpdateDifferentialDriveMotion()
+    {
+        var deltaTime = Time.deltaTime;
+        if (deltaTime <= 0f || agent == null || !agent.enabled || !agent.isOnNavMesh)
+        {
+            return;
+        }
+
+        var targetSpeed = 0f;
+        if (hasActiveDestination && navigationState == RobotNavigationState.Navigating &&
+            !agent.isStopped && !agent.pathPending)
+        {
+            var desiredDirection = agent.desiredVelocity;
+            desiredDirection.y = 0f;
+            if (desiredDirection.sqrMagnitude > 0.0001f)
+            {
+                var forward = transform.forward;
+                forward.y = 0f;
+                forward.Normalize();
+
+                var direction = desiredDirection.normalized;
+                var headingError = Mathf.Abs(Vector3.SignedAngle(forward, direction, Vector3.up));
+                var targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+                transform.rotation = Quaternion.RotateTowards(
+                    transform.rotation,
+                    targetRotation,
+                    agent.angularSpeed * deltaTime);
+
+                if (headingError < turnInPlaceAngle)
+                {
+                    var alignment = Mathf.InverseLerp(turnInPlaceAngle, fullSpeedHeadingAngle, headingError);
+                    var speedFraction = Mathf.Lerp(minimumTurningSpeedFraction, 1f, alignment);
+                    targetSpeed = agent.speed * speedFraction;
+                }
+            }
+        }
+
+        var speedChange = targetSpeed < currentForwardSpeed ? brakingDeceleration : forwardAcceleration;
+        currentForwardSpeed = Mathf.MoveTowards(currentForwardSpeed, targetSpeed, speedChange * deltaTime);
+
+        if (currentForwardSpeed > 0.0001f)
+        {
+            agent.Move(transform.forward * (currentForwardSpeed * deltaTime));
+        }
+
+        transform.position = agent.nextPosition;
     }
 
     /// <summary>
@@ -203,7 +267,7 @@ public sealed class RobotNavigationController : MonoBehaviour
 
         if (agent.pathStatus != NavMeshPathStatus.PathComplete ||
             agent.remainingDistance > Mathf.Max(agent.stoppingDistance, 0.1f) ||
-            agent.velocity.sqrMagnitude > 0.01f)
+            currentForwardSpeed > 0.01f)
         {
             return;
         }

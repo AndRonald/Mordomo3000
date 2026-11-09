@@ -56,6 +56,24 @@ public sealed class DeliveryDestination : MonoBehaviour
         return false;
     }
 
+    public int ClearAll()
+    {
+        if (storageSlots == null) return 0;
+
+        var removed = 0;
+        foreach (var slot in storageSlots)
+        {
+            if (slot == null) continue;
+            foreach (var package in slot.GetComponentsInChildren<PackageItem>(true))
+            {
+                Destroy(package.gameObject);
+                removed++;
+            }
+        }
+
+        return removed;
+    }
+
     private void OnValidate()
     {
         capacity = Mathf.Max(0, capacity);

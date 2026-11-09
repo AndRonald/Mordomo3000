@@ -19,6 +19,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Add swap space
+        run: |
+          free -h
+          sudo fallocate -l 8G /mnt/extra.swap
+          sudo chmod 600 /mnt/extra.swap
+          sudo mkswap /mnt/extra.swap
+          sudo swapon /mnt/extra.swap
+          free -h
+
       - name: Cache Unity Library
         uses: actions/cache@v4
         with:

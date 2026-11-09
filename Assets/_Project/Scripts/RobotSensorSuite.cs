@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>Simulated short-range sensors used to detect obstacles in front of the robot.</summary>
 public sealed class RobotSensorSuite : MonoBehaviour
@@ -13,6 +14,7 @@ public sealed class RobotSensorSuite : MonoBehaviour
 
     private float nextScanTime;
     private Collider detectedObstacle;
+    private NavMeshAgent navigationAgent;
 
     /// <summary>Raised when the obstacle in front changes. A null collider means the path is clear.</summary>
     public event Action<bool, Collider> ObstacleChanged;
@@ -20,6 +22,11 @@ public sealed class RobotSensorSuite : MonoBehaviour
     public bool HasObstacleAhead => detectedObstacle != null;
     public Collider DetectedObstacle => detectedObstacle;
     public float DetectionDistance => detectionDistance;
+
+    private void Awake()
+    {
+        navigationAgent = GetComponent<NavMeshAgent>();
+    }
 
     private void Update()
     {
@@ -36,7 +43,7 @@ public sealed class RobotSensorSuite : MonoBehaviour
     public void ScanNow()
     {
         var origin = transform.TransformPoint(sensorOriginOffset);
-        var direction = transform.forward;
+        var direction = GetScanDirection();
         var hits = Physics.SphereCastAll(
             origin,
             Mathf.Max(0.01f, detectionRadius),
@@ -68,6 +75,22 @@ public sealed class RobotSensorSuite : MonoBehaviour
 
         detectedObstacle = closestObstacle;
         ObstacleChanged?.Invoke(detectedObstacle != null, detectedObstacle);
+    }
+
+    private Vector3 GetScanDirection()
+    {
+        if (navigationAgent != null && navigationAgent.enabled && navigationAgent.isOnNavMesh &&
+            navigationAgent.hasPath && !navigationAgent.pathPending)
+        {
+            var directionToSteeringTarget = navigationAgent.steeringTarget - transform.position;
+            directionToSteeringTarget.y = 0f;
+            if (directionToSteeringTarget.sqrMagnitude > 0.0001f)
+            {
+                return directionToSteeringTarget.normalized;
+            }
+        }
+
+        return transform.forward;
     }
 
     private void OnValidate()

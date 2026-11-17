@@ -1,0 +1,14 @@
+{
+  "name": "MordomoProto.Fisica.Editor",
+  "rootNamespace": "MordomoProto.Fisica.Editor",
+  "references": ["MordomoProto.Fisica", "MordomoProto.Fisica.Integration", "RoboMordomo.Runtime"],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

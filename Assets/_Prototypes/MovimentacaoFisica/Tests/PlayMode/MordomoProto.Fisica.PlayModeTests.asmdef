@@ -1,0 +1,14 @@
+{
+  "name": "MordomoProto.Fisica.PlayModeTests",
+  "references": ["MordomoProto.Fisica", "MordomoProto.Fisica.Integration", "RoboMordomo.Runtime", "Unity.InputSystem"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "noEngineReferences": false
+}

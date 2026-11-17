@@ -1,0 +1,14 @@
+{
+  "name": "MordomoProto.Fisica.Integration",
+  "rootNamespace": "MordomoProto.Fisica",
+  "references": ["MordomoProto.Fisica", "RoboMordomo.Runtime", "Unity.InputSystem"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
